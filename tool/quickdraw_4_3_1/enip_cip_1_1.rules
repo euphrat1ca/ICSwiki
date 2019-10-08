@@ -1,0 +1,60 @@
+# (C) Copyright 2011, Digital Bond, Inc.
+# All rights reserved.
+#
+# Version 1.1 02/27/2011
+#
+#	Version 1.0	01/29/2011	Initial Release
+#	Version 1.1	02/27/2011	Changed reference to reflect new web site
+#
+#
+#-----------------------------
+#
+# All EtherNet/IP rules in this file require the enip preprocessor. See digitalbond.com for 
+# details on installing this preprocessor and modifying the config file.
+#
+# The EtherNet/IP preprocessor simplifies and makes possible Snort rule writing for EtherNet/IP
+# and the underlying CIP. It would be difficult to write reliable rules without the preprocessor 
+# because it is necessary to know the session state to avoid false positives and negatives. 
+# The plugins that use the preprocessor collected objects allow a Snort rule writer to easily match
+# field values, such as the CIP service.
+#
+#	Variables that must be defined in the .conf file
+#
+#		ENIP_CLIENT	The IP addresses of valid EtherNet/IP clients
+#		ENIP_SERVER	The IP addresses of valid EtherNet/IP servers
+#
+#-----------------------------
+# EtherNet IP Plugins
+#-----------------------------
+#
+# There are currently two EtherNet/IP plugins available.
+#
+#	Keyword: cip_service:<value>
+#	Purpose: matches on the CIP service field of a packet
+#	Value: decimal value of the CIP service to match on
+#	Dependencies: preprocessor enip must be active; matches only if the matching reply packet is also recorded by the session
+#	Example rule: alert tcp !$ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Reboot or Restart from Unauthorized Client"; flags:PA; cip_service:5; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:attempted-dos; sid:1111501; rev:1; priority:1;)
+#
+#	Keyword: cip_response:<value>
+#	Purpose: matches on the CIP response field of a packet
+#	Value: decimal value of the CIP response
+#	Dependencies: preprocessor enip must be active
+#	Example rule: alert tcp any 44818 -> any any (msg:"(Event XX) PLC Unlocked"; cip_service:76; cip_response:0; category:access control; sid:123; rev:1;)
+#
+# ----------------------------
+alert tcp !$ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Reboot or Restart from Unauthorized Client"; flags:PA; cip_service:5; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:denial-of-service; sid:1111501; rev:1; priority:1;)
+alert tcp !$ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Reboot or Restart from Unauthorized Client"; flags:PA; cip_service:6; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:denial-of-service; sid:1111502; rev:1; priority:1;)
+alert tcp $ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Reboot or Restart from Authorized Client"; flags:PA; cip_service:5; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:denial-of-service; sid:1111503; rev:1; priority:2;)
+alert tcp $ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Reboot or Restart from Authorized Client"; flags:PA; cip_service:6; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:denial-of-service; sid:1111504; rev:1; priority:2;)
+alert tcp !$ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Unlock PLC Attempt from Unauthorized Client"; flags:PA; cip_service:76; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:misc-attack; sid:1111505; rev:1; priority:1;)
+alert tcp $ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Unlock PLC Attempt from Authorized Client"; flags:PA; cip_service:76; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:misc-attack; sid:1111506; rev:1; priority:2;)
+alert tcp !$ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Lock PLC Attempt from Unauthorized Client"; flags:PA; cip_service:77; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:misc-attack; sid:1111507; rev:1; priority:1;)
+alert tcp !$ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Lock PLC Attempt from Unauthorized Client"; flags:PA; cip_service:78; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:misc-attack; sid:1111508; rev:1; priority:1;)
+alert tcp $ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Lock PLC Attempt from Authorized Client"; flags:PA; cip_service:77; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:misc-attack; sid:1111509; rev:1; priority:2;)
+alert tcp $ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Lock PLC Attempt from Authorized Client"; flags:PA; cip_service:78; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:misc-attack; sid:1111510; rev:1; priority:2;)
+alert tcp !$ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Stop Detected from Unauthorized Client"; flowbits:isset,ktime; flags:PA; cip_service:7; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:denial-of-service; flowbits:set,detstop; sid:1111511; rev:1; priority:2;)
+alert tcp $ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Stop Detected from Authorized Client"; flowbits:isset,ktime; flags:PA; cip_service:7; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:denial-of-service; flowbits:set,detstop; sid:1111512; rev:1; priority:2;)
+alert tcp !$ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Remote Mode Change Attempt from Unauthorized Client"; flowbits:isset,detstop; flags:PA; cip_service:76; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:misc-attack; sid:1111513; rev:1; priority:1;)
+alert tcp $ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Remote Mode Change Attempt from Authorized Client"; flowbits:isset,detstop; flags:PA; cip_service:76; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:misc-attack; sid:1111514; rev:1; priority:2;)
+alert tcp !$ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Software Upload from Unauthorized Client"; flags:PA; cip_service:79; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:misc-attack; sid:1111515; rev:1;)
+alert tcp $ENIP_CLIENT 44818 -> $ENIP_SERVER any (msg:"SCADA_IDS: ENIP/CIP - Software Upload from Authorized Client"; flags:PA; cip_service:79; reference:url,digitalbond.com/tools/quickdraw/ethernetip-rules, classtype:misc-attack; sid:1111516; rev:1;)

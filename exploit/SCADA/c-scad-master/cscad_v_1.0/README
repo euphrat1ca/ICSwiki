@@ -1,0 +1,106 @@
+-------------------------------------------------
+C-SCAD: Assessing Security Flaws in C-SCAD Web-X Client
+Authored by: Aditya K Sood |contact [at] secniche.org  | 2014
+             Twitter:     @AdityaKSood
+Powered by: SecNiche Security Labs !
+------------------------------------------------
+C-SCAD is an information gathering and penetration testing tool written to assess the security issues present in the Web-X (Internet Explorer-based web interface) client used to interact with the ClearSCADA server. Web-X client is hosted on the embedded web server which is shipped as a part of complete ClearSCADA architecture. Primarily, the Web-X client is restricted to perform any configuration changes but it can reveal potential information about the ClearSCADA server and associated components. Insecure deployments of WEB-X client can reveal potential information about the various functions such as alarm pages, SQL lists, and diagnostic checks including various reports. 
+
+-----------------------------------
+Functionalities and capabilities !
+-----------------------------------
+1. Enumerates active users configured for the Web-X access!
+2. Enumerates configured databases and SQL lists for the ClearSCADA!
+3. Performs complete configuration check for exposed components!
+4. Verifies access to diagnostic page and dumps required information!
+5. Executes dictionary attacks for checking weak credentials!
+6. Triggers Shodan search queries for exposed ClearSCADA Web-X client on the Internet!
+
+
+-----------------------------------------------
+Additional notes about working and design
+----------------------------------------------
+1. This version of c-scad is written in Python 2.6 (final) running on backtrack 5.0 and above.
+2. This version (v 1.0) primarily includes assessment of configuration flaws.
+3. This version is based on the practical testing and assessment of ClearSCADA Web-X client.
+
+----------------------------------------------
+Requirements
+--------------------------------------------
+Python 2.6 is required.
+
+
+-----------------------------------------------
+[+] Things to take care of while using c-scad !
+-----------------------------------------------
+
+Please take this into consideration:
+
+1. Always specify IP address or domain name
+2. Do not explicitly specify the http:// | https://
+
+--------------------------
+[+] C-Scad Help
+-------------------------- 
+
+    -----------------------------------------------------------
+  
+     ______               ______    ______    ________    ______
+    /_____/\             /_____/\  /_____/\  /_______/\  /_____/\     
+    \:::__\/     _______ \::::_\/_ \:::__\/  \::: _  \ \ \:::_ \ \    
+     \:\ \  __  /______/\ \:\/___/\ \:\ \  __ \::(_)  \ \ \:\ \ \ \   
+      \:\ \/_/\ \__::::\/  \_::._\:\ \:\ \/_/\ \:: __  \ \ \:\ \ \ \  
+       \:\_\ \ \            /____ \:\ \:\_\ \ \ \:.\ \  \ \ \:\/.:| | 
+        \_____\/            \_____\/   \_____\/  \__\/\__\/  \____/_/ 
+                                                                                                                
+        C-SCAD : Schneider ClearSCADA: WebX (Client) Security Assessment Tool!
+        Authored by: Aditya K Sood |contact [at] secniche.org  | 2014
+        Twitter:     @AdityaKSood
+        Powered by: SecNiche Security Labs ! (http://www.secniche.org)
+        
+        ClearSCADA : http://www.schneider-electric.com/products/
+        ClearSCADA Spec : http://plcsystems.ru/catalog/SCADAPack/doc/ClearSCADA_spec_eng.pdf
+        
+    ----------------------------------------------------------
+Usage: cscad_v_1.0.py [options]
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+
+  Access Configuration::
+    -c CONFIG, --config_check=CONFIG
+                        <CONFIGURATION = full> -- to check access permissions
+                        on the directory structure of CleaSCADA !
+
+  Enumeration::
+    -e ENUMERATION, --enum=ENUMERATION
+                        <ENUMERATION = users | database | database_links |
+                        list_sql | list_reports | snmp_check |
+                        accumulator_check > -- to enumerate the list of
+                        available users, databases, reports and available sql
+                        commands !
+
+  Dictionary Crack::
+    -a DICT_ATTACK, --dict_attack=DICT_ATTACK
+                        <DICT ATTACK = dict_attack> -- to trigger dictionary
+                        based cracking !
+
+  Diagnostics::
+    -d DIAG_ACCESS, --diag_access=DIAG_ACCESS
+                        <DIAGNOSTICS = diag_access | dump_diag_data> -- to
+                        verify the access to diagnostic webpage and dump data
+                        !
+
+  Shodan Search::
+    -s SHODAN, --shodan_search=SHODAN
+                        <SHODAN SEARCH = sh_search | shodan_search> -- to
+                        search ClearSCADA exposed WebX interface using Shodan
+                        search engine. URL option should be set to : -u =
+                        shodanhq.com !
+
+  Vulnerability Check::
+    -b AUTH_BYPASS, --auth-bypass=AUTH_BYPASS
+                        <EXPLOIT CODE = auth_bypass> -- exploit code for
+                        ICSA-11-173-01 ClearSCADA Remote Authentication Bypass
+                        Vulnerability !

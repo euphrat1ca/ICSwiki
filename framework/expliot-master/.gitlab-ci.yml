@@ -1,0 +1,131 @@
+stages:
+  - static_analysis
+  - tests
+  - installation
+  - distribution
+  - post
+
+flake8:
+  stage: static_analysis
+  image: python:3.7
+  script:
+    - pip install flake8 --quiet
+    - flake8 --max-line-length=80 expliot
+
+pylint:
+  stage: static_analysis
+  image: python:3.7
+  script:
+    - pip install pylint --quiet
+    - pip install -r requirements.txt
+    - pylint expliot
+
+ubuntu1904:
+  stage: installation
+  only:
+    - master
+  image: ubuntu:19.04
+  script:
+    - apt-get update
+    - apt-get install -y libglib2.0-dev libusb-1.0 git python3-dev python3-setuptools build-essential
+    - git clone --single-branch --branch master https://gitlab.com/expliot_framework/expliot.git expliot-master
+    - cd expliot-master
+    - python3 setup.py install
+
+debian_old:
+  stage: installation
+  only:
+    - master
+  image: debian:9
+  script:
+    - echo -e 'deb http://deb.debian.org/debian oldstable main\ndeb-src http://deb.debian.org/debian oldstable main\ndeb http://deb.debian.org/debian/ oldstable-updates main\ndeb-src http://deb.debian.org/debian/ oldstable-updates main' >> /etc/apt/sources.list
+    - apt-get update
+    - apt-get install -y libglib2.0-dev libusb-1.0 git python3-dev python3-setuptools build-essential
+    - git clone --single-branch --branch master https://gitlab.com/expliot_framework/expliot.git expliot-master
+    - cd expliot-master
+    - python3 setup.py install
+
+debian_latest:
+  stage: installation
+  only:
+    - master
+  image: debian:latest
+  script:
+    - echo -e 'deb http://deb.debian.org/debian stretch main\ndeb-src http://deb.debian.org/debian stretch-updates main\ndeb-src http://security.debian.org stretch/updates main' >> /etc/apt/sources.list
+    - apt-get update
+    - apt-get install -y libglib2.0-dev libusb-1.0 git python3-dev python3-setuptools build-essential
+    - git clone --single-branch --branch master https://gitlab.com/expliot_framework/expliot.git expliot-master
+    - cd expliot-master
+    - python3 setup.py install
+
+debian_sid:
+  stage: installation
+  only:
+    - master
+  image: debian:sid
+  script:
+    - echo -e 'deb http://deb.debian.org/debian unstable main\ndeb-src http://deb.debian.org/debian/ unstable main' >> /etc/apt/sources.list
+    - apt-get update
+    - apt-get install -y libglib2.0-dev libusb-1.0 git python3-dev python3-setuptools build-essential
+    - git clone --single-branch --branch master https://gitlab.com/expliot_framework/expliot.git expliot-master
+    - cd expliot-master
+    - python3 setup.py install
+
+fedora_latest:
+  stage: installation
+  only:
+    - master
+  image: fedora:latest
+  script:
+    - dnf -y install redhat-rpm-config libusb glib2-devel python3-devel git @development-tools
+    - git clone --single-branch --branch master https://gitlab.com/expliot_framework/expliot.git expliot-master
+    - cd expliot-master
+    - python3 setup.py install
+
+fedora_rawhide:
+  stage: installation
+  only:
+    - master
+  image: fedora:rawhide
+  script:
+    - dnf -y install redhat-rpm-config libusb glib2-devel python3-devel python3-setuptools git @development-tools
+    - git clone --single-branch --branch master https://gitlab.com/expliot_framework/expliot.git expliot-master
+    - cd expliot-master
+    - python3 setup.py install
+
+sdist:
+  stage: distribution
+  image: python:3.7
+  only:
+    - master
+  script:
+    - python setup.py sdist
+  artifacts:
+    paths:
+       - dist/
+    expire_in: 1 week
+
+wheel:
+  image: python:3.7
+  stage: distribution
+  only:
+    - master
+  script:
+    - python setup.py bdist_wheel
+  artifacts:
+    paths:
+       - dist/
+    expire_in: 1 week
+
+# This requires TWINE_USERNAME and TWINE_PASSWORD to be set
+# Settings -> CI/CD -> Variables
+pypi:
+  image: python:3.7
+  stage: post
+  cache: {}
+  script:
+    - pip install -U twine
+    - python setup.py sdist
+    - twine upload dist/*
+  only:
+    - tags
