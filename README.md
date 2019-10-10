@@ -1,6 +1,6 @@
 # 目录说明
 exploit    //收集利用脚本/工具
-    IRTexploit-db    //exploit-db.com相关exp
+    IRTexploit-db    //exploit-db.com
     IRTmetasploit    //msf相关利用插件
     etc…
 
