@@ -1,0 +1,4 @@
+
+
+class IncorrectState(Exception):
+    pass

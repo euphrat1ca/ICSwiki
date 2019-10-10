@@ -1,0 +1,45 @@
+[conf]
+    host = "192.168.0.1"     # "192.168.0.1"
+    rack = 0                # 台架号，默认0
+    slot = 2                # 插槽号，默认2
+    port = 102              # 端口，默认102
+    db_num = 50             # 操作的DB号
+
+
+[Real]
+    name = [
+        'TICR6_1_14_1', 'TICR6_1_14_2', 'TICR24_1_20_1',
+        'TICR6_1_10_1', 'TICR6_1_12_1', 'TICR6_1_14_0',
+        'QIRC26_1_12_1', 'TIR_2_1_14_1', 'TIR3_1_14_1',
+        'TICR17_1_18_1', 'TICR17_1_18_2', 'MIR6_1_13_1',
+        'PDSR4_1_10_1', 'PIR4_1_11_1', 'PIR4_1_11_2',
+        'PIR17_1_35_1', 'Temp_setpoint',
+        'spare_1', 'spare_2', 'spare_3', 'spare_4',
+        'spare_5', 'spare_6', 'spare_7', 'spare_8',
+        'spare_9', 'spare_10',
+    ]
+    offset = [
+        0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52,
+        56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96, 100, 104,
+    ]
+
+[Integer]
+    name = [
+        'system_status', 'temperature_control', 'circulate_fan_status', 'purge_fan_status',
+        'bag_status', 'gate_status', 'door_status', 'seal_status',
+        'spare_1', 'spare_2', 'spare_3', 'spare_4', 'spare_5',
+        'spare_6', 'spare_7', 'spare_8', 'spare_9', 'spare_10',
+    ]
+    offset = [
+        108, 110, 112, 114, 116, 118, 120, 122, 124,
+        126, 128, 130, 132, 134, 136, 138, 140, 142,
+    ]
+
+[Bool]
+    name = [
+        'live_bit', 'error_A', 'error_B', 'error_C', 'spare_1', 'spare_2',
+        'spare_3', 'spare_4', 'spare_5', 'spare_6', 'spare_7', 'spare_8',
+        'spare_9', 'spare_10', 'spare_11', 'spare_12', 'spare_13', 'spare_14',
+        'spare_15', 'spare_16', 'spare_17', 'spare_18', 'spare_19', 'spare_20',
+    ]
+    offset = [ 144, 145, 146, ]
