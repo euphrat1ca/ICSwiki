@@ -1,4 +1,0 @@
-recursive-include *.py
-include setup.cfg
-include LICENSE.txt README.md
-include docs/
