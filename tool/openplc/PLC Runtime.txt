@@ -1,0 +1,22 @@
+PLC for WINDOWS
+
+Installing PLC for Windows is as easy as it can get! Just download the installer and run it. Please make sure you have a reliable connection to the internet while running the installer as it downloads the latest packages from the web.
+
+PLC Runtime
+
+Installer
+
+The Windows installer also comes bundled with PLC Editor. So, you don't need to download it separately if you're installing this on your system.
+
+Once PLC Runtime is installed, you can start it by going to the start menu and launching the PLC Runtime shortcut.
+
+
+The PLC runtime has a nice web interface that you can access. While PLC runtime is running, open your browser and type:
+
+​
+localhost:8080
+
+
+Once you access PLC web interface, you should see in your browser window a login page like this:
+
+The default username and password is openplc (login) and openplc (password). This means that the first thing you must do after logging in for the first time is change the default username and password! It is very easy to do that. 
