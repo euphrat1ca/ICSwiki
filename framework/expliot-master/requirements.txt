@@ -1,2 +1,0 @@
-# EXPLIoT requirements. Maintained in setup.py.
-.
